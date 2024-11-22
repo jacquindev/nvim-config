@@ -5,7 +5,7 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
   if vim.v.shell_error ~= 0 then
     vim.api.nvim_echo({
       { "Failed to clone lazy.nvim:\n", "ErrorMsg" },
-      { out, "WarningMsg" },
+      { out,                            "WarningMsg" },
       { "\nPress any key to exit..." },
     }, true, {})
     vim.fn.getchar()
@@ -14,35 +14,63 @@ if not (vim.uv or vim.loop).fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
+local icons = {
+  kind = require("utils.icons").get("kind"),
+  documents = require("utils.icons").get("documents"),
+  ui = require("utils.icons").get("ui"),
+  ui_sep = require("utils.icons").get("ui", true),
+  misc = require("utils.icons").get("misc"),
+}
+
 require("lazy").setup({
   spec = {
-    -- add LazyVim and import its plugins
-    { "LazyVim/LazyVim", import = "lazyvim.plugins" },
-    -- import/override with your plugins
+    {
+      "LazyVim/LazyVim",
+      import = "lazyvim.plugins",
+      opts = {
+        colorscheme = "catppuccin-mocha",
+        news = { lazyvim = true, neovim = true },
+      }
+    },
     { import = "plugins" },
   },
-  defaults = {
-    -- By default, only LazyVim plugins will be lazy-loaded. Your custom plugins will load during startup.
-    -- If you know what you're doing, you can set this to `true` to have all your custom plugins lazy-loaded by default.
-    lazy = false,
-    -- It's recommended to leave version=false for now, since a lot the plugin that support versioning,
-    -- have outdated releases, which may break your Neovim install.
-    version = false, -- always use the latest git commit
-    -- version = "*", -- try installing the latest stable version for plugins that support semver
+  defaults = { lazy = false, version = false },
+  install = { colorscheme = { "tokyonight", "catppuccin" } },
+  checker = { enabled = true, notify = false },
+  ui = {
+    border = "rounded",
+    size = { width = 0.88, height = 0.8 },
+    icons = {
+      cmd = icons.misc.Code,
+      config = icons.ui.Gear,
+      event = icons.kind.Event,
+      ft = icons.documents.Files,
+      init = icons.misc.ManUp,
+      import = icons.documents.Import,
+      keys = icons.ui.Keyboard,
+      loaded = icons.ui.Check,
+      not_loaded = icons.misc.Ghost,
+      plugin = icons.ui.Package,
+      runtime = icons.misc.Vim,
+      source = icons.kind.StaticMethod,
+      start = icons.ui.Play,
+      list = {
+        icons.ui_sep.BigCircle,
+        icons.ui_sep.BigUnfilledCircle,
+        icons.ui_sep.Square,
+        icons.ui_sep.ChevronRight,
+      },
+    },
+    wrap = true,
   },
-  install = { colorscheme = { "tokyonight", "habamax" } },
-  checker = {
-    enabled = true, -- check for plugin updates periodically
-    notify = false, -- notify on update
-  }, -- automatically check for plugin updates
   performance = {
     rtp = {
       -- disable some rtp plugins
       disabled_plugins = {
         "gzip",
-        -- "matchit",
-        -- "matchparen",
-        -- "netrwPlugin",
+        "matchit",
+        "matchparen",
+        "netrwPlugin",
         "tarPlugin",
         "tohtml",
         "tutor",
